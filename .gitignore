@@ -1,0 +1,6 @@
+# 빌드 결과 중 저장소에 올리지 않는 것 (index.html만 올린다)
+cat-game.html
+artifact.html
+deploy/
+.claude/
+__pycache__/

@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#ffe9ef">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="냥이네 집">
+<title>냥이네 집</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap">
+<style>
+:root{
+  --bg:#ffe9ef; --bg2:#fff6e3; --ink:#5a3b2e; --ink2:#8a6a5a; --card:#fffdf9; --line:#f1dccf;
+  --pink:#ff8fab; --pink2:#ffd0dc; --mint:#8fd6b5; --sky:#9fd3ff; --gold:#f2b53a; --red:#ef5b6b;
+  --safe-b: env(safe-area-inset-bottom, 0px); --safe-t: env(safe-area-inset-top, 0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none;background:var(--bg);color:var(--ink);
+  font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+button{font-family:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.jua{font-family:"Jua","Gowun Dodum",sans-serif}
+#app{position:fixed;inset:0;display:flex;flex-direction:column;height:100dvh}
+#topbar{display:flex;align-items:center;gap:6px;padding:calc(8px + var(--safe-t)) 10px 8px;background:linear-gradient(var(--bg),#ffe3ea)}
+.pill{background:#fff;border-radius:999px;padding:6px 11px;font-family:"Jua",sans-serif;font-size:15px;box-shadow:0 2px 0 var(--line);white-space:nowrap}
+.pill.coin{margin-left:auto;color:#a8741a}
+.iconbtn{width:38px;height:38px;border-radius:50%;background:#fff;font-size:19px;box-shadow:0 2px 0 var(--line)}
+#roomWrap{position:relative;flex:1;min-height:0;overflow:hidden;background:#ffe2d2}
+#room{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
+#modeChip{position:absolute;left:50%;top:10px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;background:#fff;
+  padding:7px 8px 7px 14px;border-radius:999px;box-shadow:0 3px 12px rgba(120,60,60,.18);font-size:14px;max-width:92%;z-index:5}
+#modeChip button{width:28px;height:28px;border-radius:50%;background:var(--pink2);font-size:14px;flex:none}
+#toasts{position:absolute;left:0;right:0;bottom:10px;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;z-index:6}
+.toast{background:rgba(255,255,255,.96);padding:8px 14px;border-radius:14px;font-size:14px;box-shadow:0 3px 10px rgba(120,60,60,.15);
+  max-width:90%;text-align:center;animation:pop .25s ease-out}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
+#strayBanner{position:absolute;left:50%;top:100px;transform:translateX(-50%);background:#fff3c4;border:2px solid #ffd36b;
+  padding:8px 14px;border-radius:16px;font-size:14px;z-index:5;animation:bob 1.2s ease-in-out infinite;white-space:nowrap}
+@keyframes bob{50%{transform:translate(-50%,-3px)}}
+#toolbar{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:8px 8px calc(8px + var(--safe-b));background:#fff;border-top:2px solid var(--line)}
+.tool{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:62px;border-radius:16px;background:var(--bg2);
+  font-family:"Jua",sans-serif;font-size:13px;position:relative;box-shadow:0 3px 0 var(--line);transition:transform .08s}
+.tool:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.tool .ic{font-size:25px;line-height:1}
+.tool.on{background:var(--pink2)}
+.badge{position:absolute;top:5px;right:9px;width:10px;height:10px;border-radius:50%;background:var(--red)}
+/* 시트/모달 */
+.backdrop{position:fixed;inset:0;background:rgba(80,40,40,.25);z-index:20}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-height:78dvh;overflow:auto;background:var(--card);border-radius:22px 22px 0 0;z-index:21;
+  padding:8px 16px calc(18px + var(--safe-b));animation:up .22s ease-out;-webkit-overflow-scrolling:touch}
+@keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+.handle{width:44px;height:5px;border-radius:9px;background:var(--line);margin:4px auto 10px}
+.sheet h2,.modal h2{font-family:"Jua",sans-serif;font-weight:400;margin:4px 0 12px;font-size:21px}
+.sheet h3{font-family:"Jua",sans-serif;font-weight:400;margin:16px 0 8px;font-size:16px;color:var(--ink2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:9px}
+.card{background:#fff;border:2px solid var(--line);border-radius:16px;padding:10px;text-align:left;display:flex;flex-direction:column;gap:3px;min-height:92px}
+.card .ic{font-size:28px}
+.card b{font-family:"Jua",sans-serif;font-weight:400;font-size:15px}
+.card small{color:var(--ink2);font-size:12px;line-height:1.35}
+.card.locked{opacity:.55}
+.card .price{margin-top:auto;font-family:"Jua",sans-serif;color:#a8741a}
+.modal{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(80,40,40,.3)}
+.modal-card{background:var(--card);border-radius:22px;padding:18px;width:100%;max-width:400px;max-height:90dvh;overflow:auto;animation:pop .2s ease-out}
+.btn{display:block;width:100%;padding:13px;border-radius:14px;background:var(--pink);color:#fff;font-family:"Jua",sans-serif;font-size:17px;margin-top:10px;box-shadow:0 3px 0 #e06c8c}
+.btn.sub{background:#f3e7df;color:var(--ink);box-shadow:0 3px 0 var(--line)}
+.btn.danger{background:var(--red);box-shadow:0 3px 0 #c43c4c}
+.row{display:flex;align-items:center;gap:10px;margin:10px 0}
+.row label{flex:1;font-size:15px}
+input[type=range]{flex:1.4;accent-color:var(--pink)}
+.seg{display:flex;background:#f3e7df;border-radius:12px;padding:3px}
+.seg button{padding:7px 10px;border-radius:9px;font-size:13px}
+.seg button.on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.toggle{width:52px;height:30px;border-radius:999px;background:#e6d7cc;position:relative;flex:none}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.15s}
+.toggle.on{background:var(--pink)}
+.toggle.on::after{left:25px}
+.bar{height:12px;border-radius:9px;background:#f3e7df;overflow:hidden;flex:1.6}
+.bar i{display:block;height:100%;border-radius:9px}
+.stat{display:flex;align-items:center;gap:8px;margin:7px 0;font-size:14px}
+.stat span{width:66px}
+.stat em{font-style:normal;width:30px;text-align:right;color:var(--ink2);font-size:12px}
+/* 시작 / 고양이 만들기 */
+.screen{position:fixed;inset:0;z-index:40;background:linear-gradient(170deg,var(--bg),var(--bg2));display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:24px;text-align:center;overflow:auto}
+.screen h1{font-family:"Jua",sans-serif;font-weight:400;font-size:44px;margin:6px 0;color:#e0607e;letter-spacing:2px}
+.screen p{margin:6px 0;color:var(--ink2)}
+.tapstart{margin-top:20px;font-family:"Jua",sans-serif;font-size:22px;animation:bob2 1.4s ease-in-out infinite}
+@keyframes bob2{50%{transform:translateY(-5px)}}
+.hint{font-size:13px;color:var(--ink2);margin-top:26px;background:#fff8;border-radius:12px;padding:8px 12px}
+#preview{width:220px;height:200px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin:8px 0}
+.chip{padding:8px 12px;border-radius:999px;background:#fff;border:2px solid var(--line);font-size:14px;display:flex;align-items:center;gap:6px}
+.chip.on{border-color:var(--pink);background:#fff0f4}
+.dot{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(0,0,0,.15)}
+.namebox{display:flex;gap:8px;width:100%;max-width:330px;margin:8px auto}
+.namebox input{flex:1;font-family:"Jua",sans-serif;font-size:19px;padding:11px 14px;border-radius:14px;border:2px solid var(--line);text-align:center;color:var(--ink);-webkit-user-select:text;user-select:text}
+.namebox button{width:50px;border-radius:14px;background:#fff;border:2px solid var(--line);font-size:20px}
+.create{max-width:420px;width:100%}
+.create .btn{max-width:330px;margin:14px auto 0}
+/* 화장실 청소 */
+.sand{position:relative;height:230px;border-radius:20px;background:radial-gradient(circle at 30% 30%,#f7efdc,#e8d9b8);border:8px solid #f6a7c1;margin:6px 0 4px;overflow:hidden;touch-action:manipulation}
+.sand.v2{border-color:#c5a3e8}
+.clump{position:absolute;width:44px;height:30px;border-radius:50%;background:#d6c09a;box-shadow:inset -3px -4px 0 rgba(0,0,0,.08);transition:transform .25s,opacity .25s}
+.clump.poo{background:#8a5a35;width:48px;height:26px;border-radius:14px}
+.clump.gone{transform:translateY(-60px) scale(.5) rotate(25deg);opacity:0}
+/* 튜토리얼 */
+#tut{position:fixed;left:12px;right:12px;z-index:15;background:#fff;border-radius:18px;padding:12px 14px;box-shadow:0 6px 22px rgba(120,60,60,.25);
+  font-size:15px;line-height:1.45;display:flex;gap:10px;align-items:flex-start}
+#tut .ic{font-size:26px}
+#tut button{margin-left:auto;font-size:12px;color:var(--ink2);flex:none;padding:4px 6px}
+.pulse{animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(255,143,171,.45)}}
+#tip{position:absolute;left:10px;right:64px;top:10px;z-index:6;background:#fff;border:2px solid var(--pink2);border-radius:18px;
+  padding:10px 10px 10px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 14px rgba(120,60,60,.16);font-size:14px;line-height:1.4;animation:pop .25s ease-out}
+#tip .tx{flex:1;min-width:0}
+#tip .go{flex:none;background:var(--pink);color:#fff;font-family:"Jua",sans-serif;font-size:14px;padding:9px 12px;border-radius:12px;box-shadow:0 2px 0 #e06c8c}
+#tip .x{flex:none;width:28px;height:28px;border-radius:50%;background:#f3e7df;font-size:13px}
+#speedBtn{color:var(--ink);cursor:pointer;min-width:52px}
+#speedBtn.fast{background:var(--pink2)}
+#speedBtn:active{transform:translateY(1px)}
+@media (max-width:400px){.pill{padding:6px 8px;font-size:14px}#topbar{gap:4px}#dayPill .ico{display:none}.iconbtn{width:34px;height:34px;font-size:16px}}
+#pauseBtn{font-size:15px;color:var(--ink)}
+#pauseScreen{position:fixed;inset:0;z-index:19;background:rgba(80,50,60,.42);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff;text-align:center;padding:24px}
+#pauseScreen h2{font-family:"Jua",sans-serif;font-weight:400;font-size:34px;margin:0;text-shadow:0 2px 0 rgba(0,0,0,.15)}
+#pauseScreen p{margin:0;font-size:15px;opacity:.95}
+#pauseScreen .btn{max-width:260px}
+.seg.full{display:flex;margin:4px 0 8px}.seg.full button{flex:1;padding:8px 4px}
+.how{font-size:13px;color:var(--ink2);margin:8px 0 0;padding:8px 10px;background:var(--bg2);border-radius:12px;line-height:1.5}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin:0 0 12px;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+.tabs button{flex:none;padding:8px 12px;border-radius:999px;background:#f3e7df;font-family:"Jua",sans-serif;font-size:14px;white-space:nowrap}
+.tabs button.on{background:var(--pink);color:#fff}
+.tag{display:inline-block;font-size:11px;padding:2px 6px;border-radius:6px;background:var(--red);color:#fff;margin-left:4px;font-family:"Gowun Dodum",sans-serif;vertical-align:middle}
+.tag.gold{background:#f2b53a}
+.sw{display:flex;height:22px;border-radius:7px;overflow:hidden;border:1px solid var(--line)}.sw i{flex:1}
+.card.on{border-color:var(--pink);background:#fff0f4}
+.album{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.album .m{aspect-ratio:1;border-radius:12px;background:#f3e7df;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;overflow:hidden;position:relative;text-align:center;line-height:1.25;padding:3px}
+.album .m b{font-size:20px;font-weight:400}
+.album .m img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.album .m.got::after{content:attr(data-n);position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);color:#fff;font-size:10px;padding:2px}
+.album.photos{grid-template-columns:repeat(3,1fr)}
+#flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:7}
+#flash.go{animation:flash .55s ease-out}
+@keyframes flash{0%{opacity:.95}100%{opacity:0}}
+#misBtn{position:absolute;top:10px;right:10px;width:46px;height:46px;border-radius:50%;background:#fff;box-shadow:0 3px 10px rgba(120,60,60,.18);font-size:20px;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+#misBtn i{font-style:normal;font-size:10px;font-family:"Jua",sans-serif;color:var(--ink2);margin-top:2px}
+#misBtn.done i{color:var(--mint)}
+.mis{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--line);border-radius:14px;padding:10px 12px;margin:6px 0}
+.mis .tx{flex:1;min-width:0;font-size:14px}.mis .bar{margin-top:5px}.mis.done{opacity:.6}
+.mis .rw{font-family:"Jua",sans-serif;color:#a8741a;font-size:14px;white-space:nowrap}
+.swatches{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0}
+.swatches button{width:44px;height:44px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px var(--line);position:relative;font-size:12px}
+.swatches button.on{box-shadow:0 0 0 3px var(--pink)}
+.swatches button.own::after{content:"✔";position:absolute;right:-4px;bottom:-4px;background:var(--mint);color:#fff;border-radius:50%;width:18px;height:18px;font-size:11px;line-height:18px}
+.swatches button.lock{opacity:.45}
+[hidden]{display:none!important}
+@media (orientation:landscape) and (max-height:500px){
+  .tool{height:46px;flex-direction:row;gap:6px}.tool .ic{font-size:20px}
+  #toolbar{padding-top:5px;padding-bottom:calc(5px + var(--safe-b))}
+  #topbar{padding-top:calc(4px + var(--safe-t));padding-bottom:4px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="topbar">
+    <div class="pill" id="dayPill">🗓️ 1일차</div>
+    <div class="pill" id="clockPill">☀️ 08:00</div>
+    <button class="pill" id="speedBtn" aria-label="시간 속도 바꾸기">▶ 1x</button>
+    <button class="iconbtn" id="pauseBtn" aria-label="일시정지">⏸</button>
+    <div class="pill coin" id="coinPill">🪙 30</div>
+    <button class="iconbtn" id="btnSettings" aria-label="설정">⚙️</button>
+  </header>
+  <main id="roomWrap">
+    <canvas id="room"></canvas>
+    <div id="modeChip" hidden><span id="modeText"></span><button id="modeClose" aria-label="닫기">✕</button></div>
+    <div id="strayBanner" hidden>🐾 창밖에 길고양이가 찾아왔어요! <b>만나보기</b></div>
+    <div id="toasts"></div>
+    <div id="flash"></div>
+    <div id="tip" hidden></div>
+    <button id="misBtn" aria-label="오늘의 미션">📋<i id="misCount">0/3</i></button>
+  </main>
+  <nav id="toolbar">
+    <button class="tool" data-tool="food" id="btnFood"><span class="ic">🥫</span>밥</button>
+    <button class="tool" data-tool="snack" id="btnSnack"><span class="ic">🍬</span>간식</button>
+    <button class="tool" data-tool="toy" id="btnToy"><span class="ic">🧶</span>장난감</button>
+    <button class="tool" data-tool="clean" id="btnClean"><span class="ic">🧹</span>청소</button>
+    <button class="tool" data-tool="shop" id="btnShop"><span class="ic">🏪</span>상점<i class="badge" id="shopBadge" hidden></i></button>
+  </nav>
+</div>
+<div id="layer"></div>
+<div id="pauseScreen" hidden><h2>⏸ 일시정지</h2><p>시간이 멈췄어요. 고양이들도 기다리고 있어요.</p><button class="btn" id="resumeBtn">▶ 계속하기</button></div>
+<div id="tut" hidden></div>
+
+<div id="start" class="screen">
+  <canvas id="startCat" style="width:200px;height:180px"></canvas>
+  <h1>냥이네 집</h1>
+  <p>귀여운 고양이와 함께 사는 작은 방</p>
+  <div class="tapstart">🐾 탭해서 시작</div>
+  <div class="hint">🔇 소리가 안 들리면 휴대폰 무음 모드를 확인해주세요</div>
+</div>
+
+<!--SOUND_DATA-->
+<script src="data.js"></script>
+<script src="audio.js"></script>
+<script src="draw.js"></script>
+<script src="game.js"></script>
+<script src="ui.js"></script>
+</body>
+</html>
